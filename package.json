@@ -1,0 +1,30 @@
+{
+  "name": "cypress-plugin-tab",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src",
+  "scripts": {
+    "test-e2e": "cypress run"
+  },
+  "keywords": [
+    "cypress",
+    "plugin",
+    "tab"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Bkucera/cypress-plugin-tab.git"
+  },
+  "author": "Ben Kucera",
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "^3.1.5",
+    "eslint": "^5.15.0",
+    "eslint-plugin-cypress": "^2.2.1",
+    "eslint-plugin-cypress-dev": "^2.0.0",
+    "http-server": "^0.11.1"
+  },
+  "dependencies": {
+    "ally.js": "^1.4.1"
+  }
+}
