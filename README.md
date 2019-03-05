@@ -1,6 +1,6 @@
 
 <div align="center">
-    <img src="docs/readme-logo.png">
+    <!-- <img src="docs/readme-logo.png"> -->
     <h1>cypress-plugin-tab <kbd>beta</kbd></h1>
     <a href="https://www.npmjs.com/package/cypress-plugin-tab"><img src="https://img.shields.io/npm/v/cypress-plugin-tab.svg?style=flat"></a>
     <a href="https://www.npmjs.com/package/cypress-plugin-tab"><img src="https://img.shields.io/npm/dt/cypress-plugin-tab.svg"></a>
