@@ -63,7 +63,10 @@ const performTab = (el, options) => {
     // return newElm
   }
 
-  return Promise.try(() => {
+  return new Promise((resolve) => {
+    doc.defaultView.requestAnimationFrame(resolve)
+  }).then(() => {
+  // return Promise.try(() => {
     return keydown(activeElement, options, simulatedDefault, _.noop)
   }).finally(() => {
     keyup(activeElement, options)
