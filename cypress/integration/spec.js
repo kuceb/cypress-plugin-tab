@@ -3,16 +3,9 @@
 // const { _ } = Cypress
 
 describe('form test', () => {
-  let body
 
-  before(() => cy.visit('http://localhost:3939/forms.html').then((win) => {
-    body = win.document.body.outerHTML
-  }))
   beforeEach(() => {
-    cy.window().then((win) => {
-      win.document.body.outerHTML = body
-      win.document.documentElement.scrollTop = 0
-    })
+    cy.visit('/cypress/fixtures/forms.html')
   })
 
   it('can tab', () => {
@@ -115,6 +108,28 @@ describe('form test', () => {
     it('sends keyup event', () => {
       cy.get('body').tab().tab()
       cy.get('@keydown').should('be.calledTwice')
+    })
+
+    it('uses RAF for a delay', (done) => {
+      let hasTripped = false
+      let counter = 0
+
+      cy.$$('body').on('keydown', () => {
+        counter++
+
+        if (counter === 1) {
+          setTimeout(() => {
+            hasTripped = true
+          })
+
+          return
+        }
+
+        expect(hasTripped).ok
+        done()
+      })
+
+      cy.get('body').tab().tab()
     })
   })
 })
