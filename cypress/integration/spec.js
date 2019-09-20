@@ -5,9 +5,12 @@
 describe('form test', () => {
   let body
 
-  before(() => cy.visit('http://localhost:3939/forms.html').then((win) => {
-    body = win.document.body.outerHTML
-  }))
+  before(() => {
+    return cy.visit('http://localhost:3939/forms.html').then((win) => {
+      body = win.document.body.outerHTML
+    })
+  })
+
   beforeEach(() => {
     cy.window().then((win) => {
       win.document.body.outerHTML = body
@@ -30,6 +33,7 @@ describe('form test', () => {
       expect(err.message).contain('not a tabbable')
       done()
     })
+
     cy.get('body').tab().tab()
     cy.tab()
     cy.get('header:first').tab()
@@ -79,9 +83,9 @@ describe('form test', () => {
   })
 
   it('can be cancelled', () => {
-    cy.get('body').should(($el) =>
-      $el.on('keydown', (e) => e.preventDefault())
-    )
+    cy.get('body').should(($el) => {
+      return $el.on('keydown', (e) => e.preventDefault())
+    })
 
     cy.get('body').tab().tab().tab()
 
@@ -107,6 +111,7 @@ describe('form test', () => {
         doc.addEventListener('keyup', keyupStub)
       })
     })
+
     it('sends keydown event', () => {
       cy.get('body').tab().tab()
       cy.get('@keydown').should('be.calledTwice')
