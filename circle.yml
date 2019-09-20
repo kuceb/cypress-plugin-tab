@@ -18,8 +18,6 @@ jobs:
     - run:
         command: yarn lint
     - run:
-        command: yarn test
-    - run:
         command: yarn test-e2e
     - run:
         command: yarn run semantic-release
