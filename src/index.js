@@ -3,6 +3,11 @@ const tabSequence = require('ally.js/query/tabsequence')
 
 const { _, Promise } = Cypress
 
+const raf = () =>
+  new Cypress.Promise(resolve => {
+    cy.state('window').requestAnimationFrame(resolve);
+  });
+
 Cypress.Commands.add('tab', { prevSubject: 'optional' }, (subject, opts = {}) => {
 
   const options = _.defaults({}, opts, {
@@ -63,11 +68,13 @@ const performTab = (el, options) => {
     // return newElm
   }
 
-  return Promise.try(() => {
-    return keydown(activeElement, options, simulatedDefault, _.noop)
-  }).finally(() => {
-    keyup(activeElement, options)
-  })
+  return raf().then(() => {
+    return Promise.try(() => {
+      return keydown(activeElement, options, simulatedDefault, simulatedCancel);
+    }).finally(() => {
+      keyup(activeElement, options);
+    });
+  });
 
 }
 
