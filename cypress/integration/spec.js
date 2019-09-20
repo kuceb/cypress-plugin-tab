@@ -3,19 +3,9 @@
 // const { _ } = Cypress
 
 describe('form test', () => {
-  let body
-
-  before(() => {
-    return cy.visit('http://localhost:3939/forms.html').then((win) => {
-      body = win.document.body.outerHTML
-    })
-  })
 
   beforeEach(() => {
-    cy.window().then((win) => {
-      win.document.body.outerHTML = body
-      win.document.documentElement.scrollTop = 0
-    })
+    cy.visit('/cypress/fixtures/forms.html')
   })
 
   it('can tab', () => {
