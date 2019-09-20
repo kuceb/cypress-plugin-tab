@@ -120,7 +120,7 @@ describe('form test', () => {
         counter++
 
         if (counter === 1) {
-          setTimeout(() => {
+          cy.state('window').requestAnimationFrame(() => {
             hasTripped = true
           })
 
