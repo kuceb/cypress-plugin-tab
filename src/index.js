@@ -66,7 +66,7 @@ const performTab = (el, options) => {
     doc.defaultView.requestAnimationFrame(resolve)
   }).then(() => {
   // return Promise.try(() => {
-    return keydown(activeElement, options, simulatedDefault, _.noop)
+    return keydown(activeElement, options, simulatedDefault, () => doc.activeElement)
   }).finally(() => {
     keyup(activeElement, options)
   })
@@ -151,6 +151,5 @@ const pluginError = (mes) => {
 }
 
 const debug = function () {
-  // eslint-disable-next-line
   // console.log(...arguments)
 }

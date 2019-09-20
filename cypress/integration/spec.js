@@ -9,7 +9,10 @@ describe('form test', () => {
   })
 
   it('can tab', () => {
-    cy.get('body').tab().tab().tab()
+    cy.get('body').tab().tab().tab().then(($el) => {
+      expect($el[0]).eq(cy.state('document').activeElement)
+    })
+
     cy.get('.navbar-brand').should(beFocused)
   })
 
@@ -78,6 +81,18 @@ describe('form test', () => {
     })
 
     cy.get('body').tab().tab().tab()
+
+    cy.get('body').should(beFocused)
+  })
+
+  it('can be cancelled and yield activeElement', () => {
+    cy.get('body').should(($el) => {
+      return $el.on('keydown', (e) => e.preventDefault())
+    })
+
+    cy.get('body').tab().tab().tab().then(($el) => {
+      expect($el[0]).eq(cy.state('document').activeElement)
+    })
 
     cy.get('body').should(beFocused)
   })
