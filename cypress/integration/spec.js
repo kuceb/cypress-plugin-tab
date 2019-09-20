@@ -111,6 +111,28 @@ describe('form test', () => {
       cy.get('body').tab().tab()
       cy.get('@keydown').should('be.calledTwice')
     })
+
+    it('uses RAF for a delay', (done) => {
+      let hasTripped = false
+      let counter = 0
+
+      cy.$$('body').on('keydown', () => {
+        counter++
+
+        if (counter === 1) {
+          cy.state('window').requestAnimationFrame(() => {
+            hasTripped = true
+          })
+
+          return
+        }
+
+        expect(hasTripped).ok
+        done()
+      })
+
+      cy.get('body').tab().tab()
+    })
   })
 })
 
