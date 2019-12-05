@@ -2,7 +2,7 @@ const tabSequence = require('ally.js/query/tabsequence')
 
 const { _, Promise } = Cypress
 
-Cypress.Commands.add('tab', { prevSubject: 'optional' }, (subject, opts = {}) => {
+Cypress.Commands.add('tab', { prevSubject: ['optional', 'element'] }, (subject, opts = {}) => {
 
   const options = _.defaults({}, opts, {
     shift: false,
