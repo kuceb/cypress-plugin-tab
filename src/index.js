@@ -1,3 +1,4 @@
+/* global Cypress, cy */
 const tabSequence = require('ally.js/query/tabsequence')
 
 const { _, Promise } = Cypress
@@ -75,22 +76,14 @@ const performTab = (el, options) => {
 
 const nextItemFromIndex = (i, seq, reverse) => {
   if (reverse) {
-    if (i === 0 || i === -1) {
-      i = seq.length
-    }
-  } else {
-    if (i === seq.length) {
-      i = 0
-    }
+    const nextIndex = i <= 0 ? seq.length - 1 : i - 1
 
-  }
-  // }
-
-  if (reverse) {
-    return seq[i - 1]
+    return seq[nextIndex]
   }
 
-  return seq[i + 1]
+  const nextIndex = i === seq.length - 1 ? 0 : i + 1
+
+  return seq[nextIndex]
 }
 
 const tabKeyEventPartial = {
