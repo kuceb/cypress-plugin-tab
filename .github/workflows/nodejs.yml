@@ -17,10 +17,10 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
-    - name: npm install
+    - name: install
       run: |
-        npm ci
+        yarn install --frozen-lockfile
         [[ ${{ matrix.cypress-version }} == 'current' ]] || yarn add -D cypress@${{ matrix.cypress-version }}
-        npm run test-e2e
+        yarn test-e2e
       env:
         CI: true
