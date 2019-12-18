@@ -1,5 +1,4 @@
 /// <reference types="cypress"/>
-/* global cy */
 
 // const { _ } = Cypress
 

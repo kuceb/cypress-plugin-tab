@@ -1,4 +1,3 @@
-/* global Cypress, cy */
 const tabSequence = require('ally.js/query/tabsequence')
 
 const { _, Promise } = Cypress
