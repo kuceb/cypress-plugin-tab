@@ -93,6 +93,16 @@ describe('form test', () => {
     cy.get('body').should(beFocused)
   })
 
+  it('moves focus back to the first element when the last element is focused', () => {
+    cy.get('a:last').tab()
+    cy.get('a:first').should(beFocused)
+  })
+
+  it('moves focus back to the first element when the last element is focused', () => {
+    cy.get('a:first').tab({ shift: true })
+    cy.get('a:last').should(beFocused)
+  })
+
   describe('events', () => {
     beforeEach(() => {
 
