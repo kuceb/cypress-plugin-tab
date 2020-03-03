@@ -18,6 +18,7 @@ jobs:
       with:
         node-version: '12.x'
     - name: install
+    - uses: cypress/browsers:node12.16.1-chrome80-ff73
       run: |
         yarn install --frozen-lockfile
         [[ ${{ matrix.cypress-version }} =~ 'current' ]] || yarn add -D cypress@${{ matrix.cypress-version }}
