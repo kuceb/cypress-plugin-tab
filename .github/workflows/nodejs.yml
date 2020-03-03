@@ -18,10 +18,13 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
+
+    - if: ! ${{ matrix.cypress-version }} =~ 'current'
+      run: yarn add -D cypress@${{ matrix.cypress-version }}
+
     - name: install
       run: |
         yarn install --frozen-lockfile
-        if [[ ! ${{ matrix.cypress-version }} =~ 'current' ]]; then; yarn add -D cypress@${{ matrix.cypress-version }};fi
         yarn test-e2e $([[ ${{ matrix.cypress-version }} =~ 'firefox' ]] && echo '--browser firefox')
       env:
         CI: true
