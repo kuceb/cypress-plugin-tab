@@ -24,7 +24,7 @@ jobs:
         yarn install --frozen-lockfile
     - name: maybe-install
       run: |
-        if [[ ! ${{ matrix.cypress-version }} =~ current ]]; then; yarn add -D cypress@${{ matrix.cypress-version }}; fi
+        if [[ ! ${{ matrix.cypress-version }} =~ current ]]; then yarn add -D cypress@${{ matrix.cypress-version }}; fi
         
     - name: test
       run: |
