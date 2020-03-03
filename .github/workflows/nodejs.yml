@@ -24,7 +24,7 @@ jobs:
         yarn install --frozen-lockfile
     - name: maybe-install
       run: |
-        [[ ! current-firefox =~ current ]] && yarn add -D cypress@current-firefox
+        [[ current-firefox =~ current ]] || yarn add -D cypress@current-firefox
       shell: bash
         
     - name: test
