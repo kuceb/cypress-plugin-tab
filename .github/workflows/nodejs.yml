@@ -32,3 +32,4 @@ jobs:
         yarn test-e2e $([[ ${{ matrix.cypress-version }} =~ 'firefox' ]] && echo '--browser firefox')
       env:
         CI: true
+      shell: bash
