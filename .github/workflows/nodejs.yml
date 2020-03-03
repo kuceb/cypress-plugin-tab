@@ -20,7 +20,7 @@ jobs:
     - name: install
       run: |
         yarn install --frozen-lockfile
-        [[ ${{ matrix.cypress-version }} == 'current' ]] || yarn add -D cypress@${{ matrix.cypress-version }}
+        [[ ${{ matrix.cypress-version }} =~ 'current' ]] || yarn add -D cypress@${{ matrix.cypress-version }}
         yarn test-e2e $([[ ${{ matrix.cypress-version }} =~ 'firefox' ]] && echo '--browser firefox')
       env:
         CI: true
