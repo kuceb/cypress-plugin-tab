@@ -6,7 +6,8 @@ jobs:
  
   test-e2e:
     
-    runs-on: [ubuntu-16.04]
+    runs-on: ubuntu-16.04 
+    container: cypress/browsers:node12.16.1-chrome80-ff73
 
     strategy:
       matrix:
@@ -18,7 +19,6 @@ jobs:
       with:
         node-version: '12.x'
     - name: install
-    - uses: cypress/browsers:node12.16.1-chrome80-ff73
       run: |
         yarn install --frozen-lockfile
         [[ ${{ matrix.cypress-version }} =~ 'current' ]] || yarn add -D cypress@${{ matrix.cypress-version }}
