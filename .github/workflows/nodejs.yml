@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        cypress-version: ["current", 3.8.3, 3.4.1]
+        cypress-version: ["current", "current-firefox", 3.8.3, 3.4.1]
 
     steps:
     - uses: actions/checkout@v1
@@ -21,6 +21,6 @@ jobs:
       run: |
         yarn install --frozen-lockfile
         [[ ${{ matrix.cypress-version }} == 'current' ]] || yarn add -D cypress@${{ matrix.cypress-version }}
-        yarn test-e2e
+        yarn test-e2e $([[ ${{ matrix.cypress-version }} =~ 'firefox' ]] && echo '--browser firefox')
       env:
         CI: true
