@@ -3,10 +3,8 @@ name: Node CI
 on: [push]
 
 jobs:
- 
   test-e2e:
-    
-    runs-on: ubuntu-16.04 
+    runs-on: ubuntu-16.04
     container: cypress/browsers:node12.16.1-chrome80-ff73
 
     strategy:
@@ -14,22 +12,28 @@ jobs:
         cypress-version: ["current", "current-firefox", 3.8.3, 3.4.1]
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
 
-    - name: install
-      run: |
-        yarn install --frozen-lockfile
-    - name: maybe-install
-      run: |
-        [[ current-firefox =~ current ]] || yarn add -D cypress@current-firefox
-      shell: bash
-        
-    - name: test
-      run: |
-        yarn test-e2e $([[ ${{ matrix.cypress-version }} =~ 'firefox' ]] && echo '--browser firefox')
-      env:
-        CI: true
-      shell: bash
+      - name: install
+        run: |
+          yarn install --frozen-lockfile
+
+      - name: print-info
+        run: |
+          firefox --version
+
+      - name: maybe-install
+        run: |
+          firefox --version
+          [[ current-firefox =~ current ]] || yarn add -D cypress@current-firefox
+        shell: bash
+
+      - name: test
+        run: |
+          yarn test-e2e $([[ ${{ matrix.cypress-version }} =~ 'firefox' ]] && echo '--browser firefox')
+        env:
+          CI: true
+        shell: bash
