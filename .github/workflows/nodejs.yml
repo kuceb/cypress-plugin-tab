@@ -5,7 +5,9 @@ on: [push]
 jobs:
   test-e2e:
     runs-on: ubuntu-16.04
-    container: cypress/browsers:node12.16.1-chrome80-ff73
+    container:
+      image: cypress/browsers:node12.16.1-chrome80-ff73
+      options: --user 1001
 
     strategy:
       matrix:
