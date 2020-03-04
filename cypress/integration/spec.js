@@ -164,4 +164,28 @@ const beFocused = ($el) => {
   expect(el, 'activeElement').eq(activeElement)
 }
 
-const selectedText = (win) => win.getSelection().toString()
+const selectedText = () => {
+  const selectedText = cy.state('document').getSelection().toString()
+
+  if (selectedText) return selectedText
+
+  /**
+   * @type {HTMLInputElement}
+   */
+  const activeElement = cy.state('document').activeElement
+
+  let selectedTextIsValue = false
+
+  try {
+    selectedTextIsValue = activeElement.selectionStart === 0 && activeElement.selectionEnd === activeElement.value.length
+  } finally {
+    //
+  }
+
+  if (selectedTextIsValue) {
+    return activeElement.value
+  }
+
+  return ''
+
+}
