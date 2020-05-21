@@ -1,3 +1,4 @@
+const focusable = require('ally.js/query/focusable');
 const tabSequence = require('ally.js/query/tabsequence')
 
 const { _, Promise } = Cypress
