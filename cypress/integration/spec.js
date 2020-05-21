@@ -2,7 +2,58 @@
 
 // const { _ } = Cypress
 
-describe('form test', () => {
+describe('tabindex -1 test', () => {
+  beforeEach(() => {
+    cy.visit('/cypress/fixtures/tabindex.html')
+  });
+
+  describe('Move focus away from tabindex -1 element', () => {
+    beforeEach(() => {
+      cy.get('#title')
+        .focus()
+        .should('have.focus');
+    });
+
+    it('Should focus content link after tab', () => {
+      cy.focused().tab();
+
+      cy.get('#contentLink')
+        .should('have.focus');
+    });
+
+    it('Should focus skip link before tab', () => {
+      cy.focused().tab({ shift: true });
+
+      cy.get('#skipLink')
+        .should('have.focus');
+    });
+  });
+
+  describe('Tab should skip -1 element', () => {
+    it('Follows expected tab order', () => {
+      cy.get('body')
+        .tab();
+  
+      cy.get('#skipLink')
+        .should('have.focus');
+  
+      cy.focused().tab();
+  
+      cy.get('#contentLink')
+        .should('have.focus');
+    });
+  });
+
+  describe('Focus a non-focusable element', () => {
+    it('Should return an error message', () => {
+      cy.get('#subtitle').focus();
+
+      cy.focused().tab();
+    })
+  })
+})
+
+describe.skip('form test', () => {
 
   beforeEach(() => {
     cy.visit('/cypress/fixtures/forms.html')
