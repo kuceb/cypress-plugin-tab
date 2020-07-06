@@ -6,6 +6,7 @@ Cypress.Commands.add('tab', { prevSubject: ['optional', 'element'] }, (subject, 
 
   const options = _.defaults({}, opts, {
     shift: false,
+    strategy: 'quick',
   })
 
   debug('subject:', subject)
@@ -27,7 +28,7 @@ const performTab = (el, options) => {
   const activeElement = doc.activeElement
 
   const seq = tabSequence({
-    strategy: 'quick',
+    strategy: options.strategy,
     includeContext: false,
     includeOnlyTabbable: true,
     context: doc.documentElement,

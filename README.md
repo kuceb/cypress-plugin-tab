@@ -34,6 +34,7 @@ require('cypress-plugin-tab')
 - `.tab()` must be chained off of a tabbable(focusable) subject, or the `body`
 - `.tab()` changes the subject to the newly focused element after pressing `tab`
 - `.tab({ shift: true })` sends a shift-tab to the element
+- `.tab({ strategy: 'strict' })` uses the [ally.js `strict` strategy](https://allyjs.io/api/query/focusable.html#description) when finding tabbable elements, including Shadow DOM elements
 
 ```js
   cy.get('input').type('foo').tab().type('bar') // type foo, then press tab, then type bar
@@ -48,6 +49,19 @@ cy.get('input')
   .type('foop').tab()
   .type('bar').tab({ shift: true })
   .type('foo') // correct your mistake
+```
+
+Shadow DOM elements:
+
+```js
+// example: Ionic apps
+cy.get('ion-page').tab({ strategy: 'strict' });
+
+// example: always use strict by default for Shadow DOM-enabled apps
+// in commands.js
+Cypress.Commands.overwrite('tab', (originalFn, opts) => {
+  return originalFn({ strategy: 'strict', ...opts });
+})
 ```
 
 ### License
