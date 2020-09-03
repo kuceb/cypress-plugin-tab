@@ -1,3 +1,4 @@
+const focusable = require('ally.js/query/focusable');
 const tabSequence = require('ally.js/query/tabsequence')
 
 const { _, Promise } = Cypress
@@ -26,14 +27,21 @@ const performTab = (el, options) => {
   const doc = el.ownerDocument
   const activeElement = doc.activeElement
 
-  const seq = tabSequence({
+  const isFocusable = focusable({
+    strategy: 'quick',
+    includeContext: false,
+    includeOnlyTabbable: false,
+    context: doc.documentElement,
+  })
+
+  const isTabbable = tabSequence({
     strategy: 'quick',
     includeContext: false,
     includeOnlyTabbable: true,
     context: doc.documentElement,
   })
 
-  let index = seq.indexOf(el)
+  let index = isFocusable.indexOf(el)
 
   if (index === -1) {
     if (el && !(el === doc.body)) {
@@ -45,12 +53,12 @@ const performTab = (el, options) => {
     }
   }
 
-  debug(seq, index)
+  debug(isFocusable, index)
 
   /**
    * @type {HTMLElement}
    */
-  const newElm = nextItemFromIndex(index, seq, options.shift)
+  const newElm = nextItemFromIndex(index, isTabbable, options.shift)
 
   const simulatedDefault = () => {
     if (newElm.select) {
@@ -73,16 +81,14 @@ const performTab = (el, options) => {
 
 }
 
-const nextItemFromIndex = (i, seq, reverse) => {
+const nextItemFromIndex = (i, isTabbable, reverse) => {
   if (reverse) {
-    const nextIndex = i <= 0 ? seq.length - 1 : i - 1
-
-    return seq[nextIndex]
+    const nextIndex = i <= 0 ? isTabbable.length - 1 : i - 1
+    return isTabbable[nextIndex]
   }
 
-  const nextIndex = i === seq.length - 1 ? 0 : i + 1
-
-  return seq[nextIndex]
+  const nextIndex = i === isTabbable.length - 1 ? 0 : i + 1
+  return isTabbable[nextIndex]
 }
 
 const tabKeyEventPartial = {
