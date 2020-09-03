@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "",
   "main": "src",
+  "types": "src/index.d.ts",
   "scripts": {
     "lint": "eslint --ext .js,.ts,.eslintrc,.json .",
     "test-e2e": "cypress run"
