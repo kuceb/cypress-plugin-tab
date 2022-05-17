@@ -1,4 +1,37 @@
-const tabSequence = require('ally.js/query/tabsequence')
+const inputRegex = /input|select|textarea|button|object/i
+const linkRegex = /a|area/i
+
+function isVisible (element) {
+  const styles = window.getComputedStyle(element)
+
+  // In theory a parent could have visibility hidden and the child could still
+  // have height but not be visible. But for now this works for most cases.
+  return (
+    styles.visibility !== 'hidden' &&
+    styles.display !== 'none' &&
+    (element.offsetWidth ||
+      element.offsetHeight ||
+      element.getClientRects().length)
+  )
+}
+
+// Based on https://github.com/barneycarroll/tabard/blob/master/es5.js
+function getTabbable (target) {
+  return Array.from(target.querySelectorAll('*'))
+  .filter((element) => {
+    const tabbingDisabled = Boolean(element.tabIndex === -1 || element.tabIndex === '-1')
+    const tabbingForced = !isNaN(parseInt(element.tabIndex, 10))
+    const isTabbableInput = Boolean(inputRegex.test(element.tagName) && !element.disabled)
+    const isTabbableLink = Boolean(linkRegex.test(element.tagName) && (element.href || element.tabIndex))
+
+    return (
+      element !== target && !tabbingDisabled && (tabbingForced || isTabbableInput || isTabbableLink) && isVisible(element)
+    )
+  })
+  .sort((a, b) => {
+    return a.tabIndex === b.tabIndex ? 0 : a.tabIndex > b.tabIndex ? 1 : -1
+  })
+}
 
 const { _, Promise } = Cypress
 
@@ -26,12 +59,7 @@ const performTab = (el, options) => {
   const doc = el.ownerDocument
   const activeElement = doc.activeElement
 
-  const seq = tabSequence({
-    strategy: 'quick',
-    includeContext: false,
-    includeOnlyTabbable: true,
-    context: doc.documentElement,
-  })
+  const seq = getTabbable(doc.documentElement)
 
   let index = seq.indexOf(el)
 

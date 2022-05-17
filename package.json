@@ -3,7 +3,6 @@
   "version": "1.0.1",
   "description": "",
   "main": "src",
-  "types": "src/index.d.ts",
   "scripts": {
     "lint": "eslint --ext .js,.ts,.eslintrc,.json .",
     "test-e2e": "cypress run"
@@ -12,9 +11,6 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  },
-  "dependencies": {
-    "ally.js": "^1.4.1"
   },
   "devDependencies": {
     "@cypress/eslint-plugin-dev": "^4.0.0",
@@ -31,6 +27,7 @@
     "semantic-release": "^15.13.24",
     "typescript": "^3.6.3"
   },
+  "types": "src/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
