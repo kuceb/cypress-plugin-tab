@@ -20,7 +20,7 @@ function getTabbable (target) {
   return Array.from(target.querySelectorAll('*'))
   .filter((element) => {
     const tabbingDisabled = Boolean(element.tabIndex === -1 || element.tabIndex === '-1')
-    const tabbingForced = isNaN(parseInt(element.tabIndex, 10))
+    const tabbingForced = !isNaN(parseInt(element.tabIndex, 10))
     const isTabbableInput = Boolean(inputRegex.test(element.tagName) && !element.disabled)
     const isTabbableLink = Boolean(linkRegex.test(element.tagName) && (element.href || element.tabIndex))
 
