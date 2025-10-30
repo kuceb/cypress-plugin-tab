@@ -2,3 +2,6 @@ node_modules
 *.tgz
 cypress/videos
 cypress/screenshots
+/cypress-plugin-tab.iml
+/.idea/
+/.vscode/
