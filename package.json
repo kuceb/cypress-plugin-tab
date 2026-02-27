@@ -8,18 +8,10 @@
     "lint": "eslint --ext .js,.ts,.eslintrc,.json .",
     "test-e2e": "cypress run"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "dependencies": {
     "ally.js": "^1.4.1"
   },
   "devDependencies": {
-    "@cypress/eslint-plugin-dev": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "^2.3.0",
-    "@typescript-eslint/parser": "^2.3.0",
     "cypress": "4.1.0",
     "eslint": "^6.4.0",
     "eslint-plugin-cypress": "^2.2.1",
@@ -41,11 +33,5 @@
     "cypress",
     "plugin",
     "tab"
-  ],
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,eslintrc}": [
-      "eslint --fix",
-      "git add"
-    ]
-  }
+  ]
 }
