@@ -1,7 +1,11 @@
 /// <reference types="cypress" />
 
-declare namespace Cypress {
-	interface Chainable {
-		tab(options?: Partial<{shift: Boolean}>): Chainable
-	}
+declare global {
+  namespace Cypress {
+    interface Chainable<Subject = any> {
+      tab(options?: Partial<{ shift: boolean }>): Chainable<Subject>
+    }
+  }
 }
+
+export {}

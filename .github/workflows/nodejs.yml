@@ -4,38 +4,25 @@ on: [push]
 
 jobs:
   test-e2e:
-    runs-on: ubuntu-16.04
-    container:
-      image: cypress/browsers:node12.16.1-chrome80-ff73
-      options: --user 1001
-
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        cypress-version: ["current", "current-firefox", 3.8.3, 3.4.1]
+        cypress-version: ['10.11.0', '15.1.0']
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "12.x"
+          node-version: '20'
+          cache: yarn
 
       - name: install
-        run: |
-          yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile
 
-      - name: print-info
-        run: |
-          firefox --version
+      - name: install Cypress ${{ matrix.cypress-version }}
+        run: yarn add -D cypress@${{ matrix.cypress-version }}
 
-      - name: maybe-install
-        run: |
-          firefox --version
-          [[ current-firefox =~ current ]] || yarn add -D cypress@current-firefox
-        shell: bash
-
-      - name: test
-        run: |
-          yarn test-e2e $([[ ${{ matrix.cypress-version }} =~ 'firefox' ]] && echo '--browser firefox')
+      - name: test against Cypress ${{ matrix.cypress-version }}
+        run: yarn test-e2e
         env:
           CI: true
-        shell: bash

@@ -1,10 +1,19 @@
 {
   "name": "cypress-plugin-tab",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "",
-  "main": "src",
+  "main": "src/index.js",
   "types": "src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "require": "./src/index.js",
+      "default": "./src/index.js"
+    }
+  },
   "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint --ext .js,.ts,.eslintrc,.json .",
     "test-e2e": "cypress run"
   },
@@ -12,16 +21,12 @@
     "ally.js": "^1.4.1"
   },
   "devDependencies": {
-    "cypress": "4.1.0",
+    "cypress": "^10.0.0",
     "eslint": "^6.4.0",
-    "eslint-plugin-cypress": "^2.2.1",
-    "eslint-plugin-json-format": "^2.0.1",
-    "eslint-plugin-mocha": "^6.1.1",
-    "http-server": "^0.11.1",
-    "husky": "^3.0.5",
-    "lint-staged": "^9.2.5",
+    "http-server": "^14.1.1",
+    "prettier": "^3.8.1",
     "semantic-release": "^15.13.24",
-    "typescript": "^3.6.3"
+    "typescript": "^5.9.3"
   },
   "license": "MIT",
   "repository": {
@@ -33,5 +38,8 @@
     "cypress",
     "plugin",
     "tab"
-  ]
+  ],
+  "peerDependencies": {
+    "cypress": ">=10"
+  }
 }

@@ -1,6 +1,5 @@
 /// <reference types="cypress"/>
-
-// const { _ } = Cypress
+// @ts-check
 
 describe('form test', () => {
 
@@ -28,32 +27,7 @@ describe('form test', () => {
     cy.get('body').tab().tab()
     cy.tab()
     cy.get('header:first').tab()
-
   })
-
-  // tab will respect element nearest to selection
-  // in window.getSelection().baseNode, but this is complex
-
-  // it('can tab from selection', () => {
-  //   cy.get('header.navbar').tab()
-  //   cy.get('.navbar-brand').should(beFocused)
-
-  //   cy.get('.bd-example form:first').tab()
-  //   cy.get('.col-md-9 > :nth-child(6)').tab()
-  //   cy.get('.bd-example form:first input:first').should(beFocused)
-  // })
-
-  // this is slow, obviously
-  // it('can tab 31 times', () => {
-  //   const tab = (el) => el.tab()
-  //   let body = cy.get('body')
-
-  //   // tab(tab(body))
-  //   _.times(31, () => {
-  //     body = tab(body)
-  //   })
-  //   cy.contains('Jumbotron').should(beFocused)
-  // })
 
   it('can shift-tab', () => {
     cy.get('body').tab({ shift: true })
@@ -62,8 +36,8 @@ describe('form test', () => {
 
   it('selects text in input', () => {
     cy.get('input#search-input').type('foobar').tab().tab({ shift: true })
-    cy.window().then((win) => {
-      expect(selectedText(win)).eq('foobar')
+    cy.window().then(() => {
+      expect(selectedText()).eq('foobar')
     })
   })
 
@@ -71,6 +45,32 @@ describe('form test', () => {
     cy.get('#overview > div > .anchorjs-link').focus().tab().tab()
 
     cy.get('.bd-example form input:first').should(beFocused)
+  })
+
+  it('can tab out of a programmatically focused tabindex=-1 element', () => {
+    cy.document().then((doc) => {
+      doc.body.innerHTML = `
+        <button id="before">Before</button>
+        <div id="programmatic" tabindex="-1">Programmatic</div>
+        <button id="after">After</button>
+      `
+    })
+
+    cy.get('#programmatic').focus().tab()
+    cy.get('#after').should(beFocused)
+  })
+
+  it('can shift-tab out of a programmatically focused tabindex=-1 element', () => {
+    cy.document().then((doc) => {
+      doc.body.innerHTML = `
+        <button id="before">Before</button>
+        <div id="programmatic" tabindex="-1">Programmatic</div>
+        <button id="after">After</button>
+      `
+    })
+
+    cy.get('#programmatic').focus().tab({ shift: true })
+    cy.get('#before').should(beFocused)
   })
 
   it('can be cancelled', () => {
@@ -105,18 +105,9 @@ describe('form test', () => {
 
   describe('events', () => {
     beforeEach(() => {
-
       cy.document().then((doc) => {
-        const keydownStub = cy.stub()
-        // .callsFake((e) => {
-        //   console.log('keydown, Target:', e.target, e)
-        // })
-        .as('keydown')
-        const keyupStub = cy.stub()
-        // .callsFake((e) => {
-        //   // console.log('keyup, Target:', e.target, e)
-        // })
-        .as('keyup')
+        const keydownStub = cy.stub().as('keydown')
+        const keyupStub = cy.stub().as('keyup')
 
         doc.addEventListener('keydown', keydownStub)
         doc.addEventListener('keyup', keyupStub)
@@ -177,7 +168,9 @@ const selectedText = () => {
   let selectedTextIsValue = false
 
   try {
-    selectedTextIsValue = activeElement.selectionStart === 0 && activeElement.selectionEnd === activeElement.value.length
+    selectedTextIsValue =
+      activeElement.selectionStart === 0 &&
+      activeElement.selectionEnd === activeElement.value.length
   } finally {
     //
   }
@@ -187,5 +180,4 @@ const selectedText = () => {
   }
 
   return ''
-
 }

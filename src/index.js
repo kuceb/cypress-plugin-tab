@@ -1,28 +1,30 @@
 const tabSequence = require('ally.js/query/tabsequence')
+const isFocusable = require('ally.js/is/focusable')
 
 const { _, Promise } = Cypress
 
-Cypress.Commands.add('tab', { prevSubject: ['optional', 'element'] }, (subject, opts = {}) => {
+Cypress.Commands.add(
+  'tab',
+  { prevSubject: ['optional', 'element'] },
+  (subject, opts = {}) => {
+    const options = _.defaults({}, opts, {
+      shift: false,
+    })
 
-  const options = _.defaults({}, opts, {
-    shift: false,
-  })
+    debug('subject:', subject)
 
-  debug('subject:', subject)
+    if (subject) {
+      return performTab(subject[0], options)
+    }
 
-  if (subject) {
-    return performTab(subject[0], options)
-  }
+    const win = cy.state('window')
+    const activeElement = win.document.activeElement
 
-  const win = cy.state('window')
-  const activeElement = win.document.activeElement
-
-  return performTab(activeElement, options)
-
-})
+    return performTab(activeElement, options)
+  },
+)
 
 const performTab = (el, options) => {
-
   const doc = el.ownerDocument
   const activeElement = doc.activeElement
 
@@ -36,9 +38,9 @@ const performTab = (el, options) => {
   let index = seq.indexOf(el)
 
   if (index === -1) {
-    if (el && !(el === doc.body)) {
+    if (el && !(el === doc.body) && !isFocusable(el)) {
       pluginError(`
-        Subject is not a tabbable element
+        Subject is not a tabbable or focusable element
         - Use cy.get(\'body\').tab() if you wish to tab into the first element on the page
         - Use cy.focused().tab() if you wish to tab into the currently active element
       `)
@@ -50,7 +52,10 @@ const performTab = (el, options) => {
   /**
    * @type {HTMLElement}
    */
-  const newElm = nextItemFromIndex(index, seq, options.shift)
+  const newElm =
+    index === -1
+      ? nextItemFromElement(el, seq, options.shift)
+      : nextItemFromIndex(index, seq, options.shift)
 
   const simulatedDefault = () => {
     if (newElm.select) {
@@ -64,13 +69,19 @@ const performTab = (el, options) => {
 
   return new Promise((resolve) => {
     doc.defaultView.requestAnimationFrame(resolve)
-  }).then(() => {
-  // return Promise.try(() => {
-    return keydown(activeElement, options, simulatedDefault, () => doc.activeElement)
-  }).finally(() => {
-    keyup(activeElement, options)
   })
-
+    .then(() => {
+      // return Promise.try(() => {
+      return keydown(
+        activeElement,
+        options,
+        simulatedDefault,
+        () => doc.activeElement,
+      )
+    })
+    .finally(() => {
+      keyup(activeElement, options)
+    })
 }
 
 const nextItemFromIndex = (i, seq, reverse) => {
@@ -85,6 +96,27 @@ const nextItemFromIndex = (i, seq, reverse) => {
   return seq[nextIndex]
 }
 
+const nextItemFromElement = (el, seq, reverse) => {
+  const nextIndex = seq.findIndex((candidate) => isAfter(el, candidate))
+
+  if (nextIndex === -1) {
+    return reverse ? seq[seq.length - 1] : seq[0]
+  }
+
+  if (reverse) {
+    return nextIndex === 0 ? seq[seq.length - 1] : seq[nextIndex - 1]
+  }
+
+  return seq[nextIndex]
+}
+
+const isAfter = (source, candidate) => {
+  const { Node } = source.ownerDocument.defaultView
+  const position = source.compareDocumentPosition(candidate)
+
+  return Boolean(position & Node.DOCUMENT_POSITION_FOLLOWING)
+}
+
 const tabKeyEventPartial = {
   key: 'Tab',
   code: 'Tab',
@@ -93,28 +125,35 @@ const tabKeyEventPartial = {
   charCode: 0,
 }
 
-const fireKeyEvent = (type, el, eventOptionsExtend, bubbles = false, cancelable = false) => {
+const fireKeyEvent = (
+  type,
+  el,
+  eventOptionsExtend,
+  bubbles = false,
+  cancelable = false,
+) => {
   const win = el.ownerDocument.defaultView
 
-  const eventInit = _.extend({
-    bubbles,
-    cancelable,
-    altKey: false,
-    ctrlKey: false,
-    metaKey: false,
-    shiftKey: false,
-  }, eventOptionsExtend)
+  const eventInit = _.extend(
+    {
+      bubbles,
+      cancelable,
+      altKey: false,
+      ctrlKey: false,
+      metaKey: false,
+      shiftKey: false,
+    },
+    eventOptionsExtend,
+  )
 
   const keyboardEvent = new win.KeyboardEvent(type, eventInit)
 
   const cancelled = !el.dispatchEvent(keyboardEvent)
 
   return cancelled
-
 }
 
 const keydown = (el, options, onSucceed, onCancel) => {
-
   const eventOptions = _.extend({}, tabKeyEventPartial, {
     shiftKey: options.shift,
   })
@@ -129,13 +168,11 @@ const keydown = (el, options, onSucceed, onCancel) => {
 }
 
 const keyup = (el, options) => {
-
   const eventOptions = _.extend({}, tabKeyEventPartial, {
     shiftKey: options.shift,
   })
 
   return fireKeyEvent('keyup', el, eventOptions, true, false)
-
 }
 
 const pluginError = (mes) => {
