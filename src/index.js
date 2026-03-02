@@ -1,5 +1,9 @@
-const tabSequence = require('ally.js/query/tabsequence')
-const isFocusable = require('ally.js/is/focusable')
+const {
+  findNextTabStop,
+  findPreviousTabStop,
+  getTabSearchStart,
+  isFocusable,
+} = require('./utils')
 
 const { _, Promise } = Cypress
 
@@ -14,48 +18,41 @@ Cypress.Commands.add(
     debug('subject:', subject)
 
     if (subject) {
-      return performTab(subject[0], options)
+      const doc = subject[0].ownerDocument
+      const useActiveElement = shouldFollowFocusFromChain()
+      const el = useActiveElement ? doc.activeElement : subject[0]
+      const useSubjectAsSearchAnchor = useActiveElement && isVirtualTabAnchor(subject[0])
+      const searchStart = useSubjectAsSearchAnchor ? subject[0] : el
+      const searchOptions = {
+        allowFragmentTarget: searchStart !== el,
+      }
+
+      return performTab(el, options, searchStart, searchOptions)
     }
 
     const win = cy.state('window')
     const activeElement = win.document.activeElement
 
-    return performTab(activeElement, options)
+    return performTab(activeElement, options, activeElement)
   },
 )
 
-const performTab = (el, options) => {
+const performTab = (el, options, searchAnchor = el, searchOptions = {}) => {
   const doc = el.ownerDocument
-  const activeElement = doc.activeElement
+  const activeElement = ensureFocused(el)
+  const searchStart = getTabSearchStart(doc, searchAnchor, searchOptions)
+  const newElm = options.shift
+    ? findPreviousTabStop(searchStart)
+    : findNextTabStop(searchStart)
+  const isTabbable = newElm ? true : isFocusable(el)
 
-  const seq = tabSequence({
-    strategy: 'quick',
-    includeContext: false,
-    includeOnlyTabbable: true,
-    context: doc.documentElement,
-  })
-
-  let index = seq.indexOf(el)
-
-  if (index === -1) {
-    if (el && !(el === doc.body) && !isFocusable(el)) {
-      pluginError(`
-        Subject is not a tabbable or focusable element
-        - Use cy.get(\'body\').tab() if you wish to tab into the first element on the page
-        - Use cy.focused().tab() if you wish to tab into the currently active element
-      `)
-    }
+  if (!isTabbable && el && !(el === doc.body)) {
+    pluginError(`
+      Subject is not a tabbable or focusable element
+      - Use cy.get(\'body\').tab() if you wish to tab into the first element on the page
+      - Use cy.focused().tab() if you wish to tab into the currently active element
+    `)
   }
-
-  debug(seq, index)
-
-  /**
-   * @type {HTMLElement}
-   */
-  const newElm =
-    index === -1
-      ? nextItemFromElement(el, seq, options.shift)
-      : nextItemFromIndex(index, seq, options.shift)
 
   const simulatedDefault = () => {
     if (newElm && newElm.select) {
@@ -69,12 +66,11 @@ const performTab = (el, options) => {
     doc.defaultView.requestAnimationFrame(resolve)
   })
     .then(() => {
-      // return Promise.try(() => {
       return keydown(
         activeElement,
         options,
         simulatedDefault,
-        () => doc.activeElement,
+        () => ensureFocused(activeElement),
       )
     })
     .finally(() => {
@@ -82,37 +78,56 @@ const performTab = (el, options) => {
     })
 }
 
-const nextItemFromIndex = (i, seq, reverse) => {
-  if (reverse) {
-    const nextIndex = i <= 0 ? seq.length - 1 : i - 1
-
-    return seq[nextIndex]
+const ensureFocused = (el) => {
+  if (el.ownerDocument.activeElement === el) {
+    return el
   }
 
-  const nextIndex = i === seq.length - 1 ? 0 : i + 1
+  if (typeof el.focus === 'function') {
+    el.focus()
+  }
 
-  return seq[nextIndex]
+  if (el.ownerDocument.activeElement !== el) {
+    cy.now('focus', cy.$$(el))
+  }
+
+  return el
 }
 
-const nextItemFromElement = (el, seq, reverse) => {
-  const nextIndex = seq.findIndex((candidate) => isAfter(el, candidate))
+const shouldFollowFocusFromChain = () => {
+  const current = cy.state('current')
 
-  if (nextIndex === -1) {
-    return reverse ? seq[seq.length - 1] : seq[0]
+  if (!current || typeof current.get !== 'function') {
+    return false
   }
 
-  if (reverse) {
-    return nextIndex === 0 ? seq[seq.length - 1] : seq[nextIndex - 1]
+  const chainerId = current.get('chainerId')
+  let command = current.get('prev')
+
+  while (command && typeof command.get === 'function') {
+    if (command.get('chainerId') !== chainerId) {
+      break
+    }
+
+    if (!command.get('query')) {
+      return true
+    }
+
+    command = command.get('prev')
   }
 
-  return seq[nextIndex]
+  return false
 }
 
-const isAfter = (source, candidate) => {
-  const { Node } = source.ownerDocument.defaultView
-  const position = source.compareDocumentPosition(candidate)
+const isVirtualTabAnchor = (el) => {
+  if (!el || el.nodeType !== 1 || el.nodeName.toLowerCase() !== 'a') {
+    return false
+  }
 
-  return Boolean(position & Node.DOCUMENT_POSITION_FOLLOWING)
+  const href = el.getAttribute('href')
+  const doc = el.ownerDocument
+
+  return Boolean(href && href.startsWith('#') && href !== '#' && doc.location.hash === href)
 }
 
 const tabKeyEventPartial = {
@@ -146,7 +161,7 @@ const fireKeyEvent = (
 
   const keyboardEvent = new win.KeyboardEvent(type, eventInit)
 
-  const cancelled = !el.dispatchEvent(keyboardEvent)
+  const cancelled = !el.dispatchEvent(keyboardEvent) || keyboardEvent.defaultPrevented
 
   return cancelled
 }

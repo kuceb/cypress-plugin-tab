@@ -16,11 +16,8 @@
     "format:check": "prettier --check .",
     "test-e2e": "cypress run"
   },
-  "dependencies": {
-    "ally.js": "^1.4.1"
-  },
   "devDependencies": {
-    "cypress": "^10.0.0",
+    "cypress": "^15.1.0",
     "http-server": "^14.1.1",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3"

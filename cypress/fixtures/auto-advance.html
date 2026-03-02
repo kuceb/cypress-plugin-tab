@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auto Advance Inputs</title>
+  </head>
+  <body>
+    <form>
+      <label for="digit-1">Digit 1</label>
+      <input id="digit-1" maxlength="1" inputmode="numeric" />
+
+      <label for="digit-2">Digit 2</label>
+      <input id="digit-2" maxlength="1" inputmode="numeric" />
+
+      <label for="digit-3">Digit 3</label>
+      <input id="digit-3" maxlength="1" inputmode="numeric" />
+
+      <label for="digit-4">Digit 4</label>
+      <input id="digit-4" maxlength="1" inputmode="numeric" />
+
+      <button id="submit" type="submit">Submit</button>
+    </form>
+
+    <script>
+      const inputs = Array.from(document.querySelectorAll('input'))
+
+      inputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+          if (input.value.length === input.maxLength) {
+            const nextInput = inputs[index + 1]
+
+            if (nextInput) {
+              nextInput.focus()
+            }
+          }
+        })
+      })
+    </script>
+  </body>
+</html>

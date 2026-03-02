@@ -61,7 +61,7 @@ module.exports = defineConfig({
 - `.tab({ shift: true })` sends a shift-tab to the element
 
 ```js
-cy.get('input').type('foo').tab().type('bar') // type foo, then press tab, then type bar
+cy.get('input').type('hello').tab().type('world') // type foo, then press tab, then type bar
 cy.get('body').tab() // tab into the first tabbable element on the page
 cy.focused().tab() // tab into the currently focused element
 ```
@@ -69,7 +69,7 @@ cy.focused().tab() // tab into the currently focused element
 shift+tab:
 
 ```js
-cy.get('input').type('foop').tab().type('bar').tab({ shift: true }).type('foo') // correct your mistake
+cy.get('input').type('hwllo').tab().type('world').tab({ shift: true }).type('hello') // correct your mistake
 ```
 
 ### License
