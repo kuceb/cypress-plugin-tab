@@ -1,6 +1,42 @@
 /// <reference types="cypress"/>
 // @ts-check
 
+describe('issue #18', () => {
+  beforeEach(() => {
+    cy.visit('/cypress/fixtures/issue18.html')
+  })
+
+  describe('Move focus away from tabindex -1 element', () => {
+    beforeEach(() => {
+      cy.get('#title').focus().should('have.focus')
+    })
+
+    it('Should focus content link after tab', () => {
+      cy.tab()
+
+      cy.get('#contentLink').should('have.focus')
+    })
+
+    it('Should focus skip link before tab', () => {
+      cy.tab({ shift: true })
+
+      cy.get('#skipLink').should('have.focus')
+    })
+  })
+
+  describe('Tab should skip -1 element', () => {
+    it('Follows expected tab order', () => {
+      cy.get('body').tab()
+
+      cy.get('#skipLink').should('have.focus')
+
+      cy.tab()
+
+      cy.get('#contentLink').should('have.focus')
+    })
+  })
+})
+
 describe('issue #42 - cy.clock', () => {
   beforeEach(() => {
     cy.clock(new Date(2021, 2, 30, 12))
