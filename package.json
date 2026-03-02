@@ -28,7 +28,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Bkucera/cypress-plugin-tab.git"
+    "url": "git://github.com/kuceb/cypress-plugin-tab.git"
   },
   "author": "Ben Kucera",
   "keywords": [

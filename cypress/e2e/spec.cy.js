@@ -167,46 +167,37 @@ describe('issue 63', () => {
 describe('tabindex -1 test', () => {
   beforeEach(() => {
     cy.visit('/cypress/fixtures/tabindex.html')
-  });
+  })
 
   describe('Move focus away from tabindex -1 element', () => {
     beforeEach(() => {
-      cy.get('#title')
-        .focus()
-        .should('have.focus');
-    });
+      cy.get('#title').focus().should('have.focus')
+    })
 
     it('Should focus content link after tab', () => {
-      cy.focused().tab();
+      cy.focused().tab()
 
-      cy.get('#contentLink')
-        .should('have.focus');
-    });
+      cy.get('#contentLink').should('have.focus')
+    })
 
     it('Should focus skip link before tab', () => {
-      cy.focused().tab({ shift: true });
+      cy.focused().tab({ shift: true })
 
-      cy.get('#skipLink')
-        .should('have.focus');
-    });
-  });
+      cy.get('#skipLink').should('have.focus')
+    })
+  })
 
   describe('Tab should skip -1 element', () => {
     it('Follows expected tab order', () => {
-      cy.get('body')
-        .tab();
+      cy.get('body').tab()
 
-      cy.get('#skipLink')
-        .should('have.focus');
+      cy.get('#skipLink').should('have.focus')
 
-      cy.focused().tab();
+      cy.focused().tab()
 
-      cy.get('#contentLink')
-        .should('have.focus');
-    });
-  });
-
-
+      cy.get('#contentLink').should('have.focus')
+    })
+  })
 })
 
 //@ts-ignore

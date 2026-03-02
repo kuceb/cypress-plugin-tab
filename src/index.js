@@ -58,13 +58,11 @@ const performTab = (el, options) => {
       : nextItemFromIndex(index, seq, options.shift)
 
   const simulatedDefault = () => {
-    if (newElm.select) {
+    if (newElm && newElm.select) {
       newElm.select()
     }
 
     return cy.now('focus', cy.$$(newElm))
-    // newElm.focus()
-    // return newElm
   }
 
   return new Promise((resolve) => {
