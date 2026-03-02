@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   publish:
@@ -23,10 +22,12 @@ jobs:
         with:
           node-version: '22.14.0'
           registry-url: 'https://registry.npmjs.org'
-          cache: yarn
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      - name: Configure npm auth
+        run: |
+          printf "//registry.npmjs.org/:_authToken=%s\n" "${NPM_TOKEN}" > ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Verify tag matches package version
         shell: bash
@@ -43,4 +44,4 @@ jobs:
         run: npm pack --dry-run
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: npm publish --access public
