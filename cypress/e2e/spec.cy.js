@@ -1,6 +1,16 @@
 /// <reference types="cypress"/>
 // @ts-check
 
+describe('issue #42 - cy.clock', () => {
+  beforeEach(() => {
+    cy.clock(new Date(2021, 2, 30, 12))
+    cy.visit('/cypress/fixtures/forms.html')
+  })
+  it('can tab from root of cy chain', () => {
+    cy.get('#search-input').click().tab()
+  })
+})
+
 describe('form behavior', () => {
   beforeEach(() => {
     cy.visit('/cypress/fixtures/forms.html')

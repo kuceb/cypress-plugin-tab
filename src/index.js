@@ -62,7 +62,7 @@ const performTab = (el, options, searchAnchor = el, searchOptions = {}) => {
   }
 
   return new Promise((resolve) => {
-    doc.defaultView.requestAnimationFrame(resolve)
+    window.requestAnimationFrame(resolve)
   })
     .then(() => {
       return keydown(activeElement, options, simulatedDefault, () =>
