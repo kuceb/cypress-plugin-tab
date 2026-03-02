@@ -132,6 +132,7 @@ describe('form test', () => {
         counter++
 
         if (counter === 1) {
+          //@ts-ignore
           cy.state('window').requestAnimationFrame(() => {
             hasTripped = true
           })
@@ -146,16 +147,79 @@ describe('form test', () => {
       cy.get('body').tab().tab()
     })
   })
+
 })
 
+describe('issue 63', () => {
+  beforeEach(() => {
+    cy.visit('/cypress/fixtures/issue63.html')
+  })
+
+  it("skip to content", () => {
+    cy.get("#first-input").should("not.be.focused");
+    cy.get("#skipto").click().tab();
+    cy.get("#first-input").should("be.focused");
+  })
+
+})
+
+
+describe('tabindex -1 test', () => {
+  beforeEach(() => {
+    cy.visit('/cypress/fixtures/tabindex.html')
+  });
+
+  describe('Move focus away from tabindex -1 element', () => {
+    beforeEach(() => {
+      cy.get('#title')
+        .focus()
+        .should('have.focus');
+    });
+
+    it('Should focus content link after tab', () => {
+      cy.focused().tab();
+
+      cy.get('#contentLink')
+        .should('have.focus');
+    });
+
+    it('Should focus skip link before tab', () => {
+      cy.focused().tab({ shift: true });
+
+      cy.get('#skipLink')
+        .should('have.focus');
+    });
+  });
+
+  describe('Tab should skip -1 element', () => {
+    it('Follows expected tab order', () => {
+      cy.get('body')
+        .tab();
+
+      cy.get('#skipLink')
+        .should('have.focus');
+
+      cy.focused().tab();
+
+      cy.get('#contentLink')
+        .should('have.focus');
+    });
+  });
+
+
+})
+
+//@ts-ignore
 const beFocused = ($el) => {
   const el = $el[0]
+  //@ts-ignore
   const activeElement = cy.state('document').activeElement
 
   expect(el, 'activeElement').eq(activeElement)
 }
 
 const selectedText = () => {
+  //@ts-ignore
   const selectedText = cy.state('document').getSelection().toString()
 
   if (selectedText) return selectedText
@@ -163,6 +227,8 @@ const selectedText = () => {
   /**
    * @type {HTMLInputElement}
    */
+  //@ts-ignore
+
   const activeElement = cy.state('document').activeElement
 
   let selectedTextIsValue = false
