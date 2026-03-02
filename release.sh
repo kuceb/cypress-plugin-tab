@@ -81,18 +81,63 @@ echo "Releasing from branch: ${CURRENT_BRANCH}"
 
 CURRENT_VERSION="$(node -p "require('./package.json').version")"
 NEW_VERSION="$(node -e "
-  const semver = require('semver')
   const current = require('./package.json').version
   const arg = process.argv[1]
-  const next = semver.valid(arg) || semver.inc(current, arg)
-  if (!next) {
+  const exactVersionPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/
+
+  const parseCoreVersion = (value) => {
+    const match = value.match(/^(\d+)\.(\d+)\.(\d+)/)
+    if (!match) {
+      return null
+    }
+
+    return {
+      major: Number(match[1]),
+      minor: Number(match[2]),
+      patch: Number(match[3]),
+    }
+  }
+
+  let next = null
+
+  if (exactVersionPattern.test(arg)) {
+    next = arg
+  } else {
+    const parsed = parseCoreVersion(current)
+
+    if (!parsed) {
+      process.exit(1)
+    }
+
+    if (arg === 'major') {
+      next = String(parsed.major + 1) + '.0.0'
+    } else if (arg === 'minor') {
+      next = parsed.major + '.' + String(parsed.minor + 1) + '.0'
+    } else if (arg === 'patch') {
+      next = parsed.major + '.' + parsed.minor + '.' + String(parsed.patch + 1)
+    }
+  }
+
+  if (next === null) {
     process.exit(1)
   }
+
   process.stdout.write(next)
 " "${VERSION_ARG}")"
 TAG="v${NEW_VERSION}"
+ALLOW_SAME_VERSION=false
+
+if [[ "${VERSION_ARG}" == "${CURRENT_VERSION}" ]]; then
+  ALLOW_SAME_VERSION=true
+fi
 
 if [[ "${DRY_RUN}" == "true" ]]; then
+  NPM_VERSION_COMMAND="npm version \"${VERSION_ARG}\" --no-git-tag-version"
+
+  if [[ "${ALLOW_SAME_VERSION}" == "true" ]]; then
+    NPM_VERSION_COMMAND="${NPM_VERSION_COMMAND} --allow-same-version"
+  fi
+
   cat <<EOF
 Dry run only. No files or tags will be changed.
 
@@ -104,7 +149,7 @@ Will push:       ${PUSH}
 Will publish:    ${PUBLISH}
 
 Commands:
-  npm version "${VERSION_ARG}" --no-git-tag-version
+  ${NPM_VERSION_COMMAND}
   git add package.json$( [[ -f yarn.lock ]] && printf ' yarn.lock' )$( [[ -f package-lock.json ]] && printf ' package-lock.json' )
   git commit -m "release: ${TAG}"
   git tag "${TAG}"
@@ -124,7 +169,13 @@ EOF
   exit 0
 fi
 
-npm version "${VERSION_ARG}" --no-git-tag-version
+NPM_VERSION_ARGS=("${VERSION_ARG}" --no-git-tag-version)
+
+if [[ "${ALLOW_SAME_VERSION}" == "true" ]]; then
+  NPM_VERSION_ARGS+=(--allow-same-version)
+fi
+
+npm version "${NPM_VERSION_ARGS[@]}"
 
 git add package.json
 
