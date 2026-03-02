@@ -23,6 +23,37 @@ jobs:
           node-version: '22.14.0'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Validate npm token secret
+        shell: bash
+        run: |
+          if [[ -z "${NPM_TOKEN:-}" ]]; then
+            echo "NPM_TOKEN is missing for the npm environment." >&2
+            echo "Add an npm automation token as the NPM_TOKEN secret before releasing." >&2
+            exit 1
+          fi
+
+          if [[ "${NPM_TOKEN}" =~ [[:space:]] ]]; then
+            echo "NPM_TOKEN contains whitespace, which usually means it was pasted incorrectly." >&2
+            exit 1
+          fi
+
+          if [[ "${NPM_TOKEN}" == *"//registry.npmjs.org/:_authToken="* ]]; then
+            echo "NPM_TOKEN should be the raw npm token only, not an .npmrc line." >&2
+            exit 1
+          fi
+
+          case "${NPM_TOKEN}" in
+            npm_*)
+              ;;
+            *)
+              echo "NPM_TOKEN does not start with the expected npm token prefix 'npm_'." >&2
+              echo "Make sure this secret is a current npm automation token." >&2
+              exit 1
+              ;;
+          esac
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Configure npm auth
         run: |
           printf "//registry.npmjs.org/:_authToken=%s\n" "${NPM_TOKEN}" > ~/.npmrc
