@@ -15,8 +15,6 @@ Cypress.Commands.add(
       shift: false,
     })
 
-    debug('subject:', subject)
-
     if (subject) {
       const doc = subject[0].ownerDocument
       const useActiveElement = shouldFollowFocusFromChain()
@@ -105,7 +103,7 @@ const shouldFollowFocusFromChain = () => {
   let command = current.get('prev')
 
   while (command && typeof command.get === 'function') {
-    if (command.get('chainerId') !== chainerId) {
+    if (command.get('chainerId') !== chainerId || command.get('type') === 'parent') {
       break
     }
 
@@ -192,6 +190,3 @@ const pluginError = (mes) => {
   throw new Error(`[cypress-plugin-tab]: ${mes}`)
 }
 
-const debug = function () {
-  // console.log(...arguments)
-}

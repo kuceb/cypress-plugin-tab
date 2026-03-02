@@ -14,7 +14,7 @@ describe('form behavior', () => {
   })
 
   it('tabs forward from a subject element', () => {
-    cy.get('input:first').tab().tab().tab()
+    cy.get('input#search-input').tab().tab().tab()
     cy.get(':nth-child(3) > .bd-toc-link').should(beFocused)
   })
 
