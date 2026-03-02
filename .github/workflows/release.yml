@@ -43,5 +43,8 @@ jobs:
       - name: Check package contents
         run: npm pack --dry-run
 
+      - name: Verify npm authentication
+        run: npm whoami
+
       - name: Publish to npm
         run: npm publish --access public
