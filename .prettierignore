@@ -1,0 +1,10 @@
+node_modules
+coverage
+dist
+cypress/videos
+cypress/screenshots
+cypress/fixtures
+docs/*.gif
+docs/*.png
+yarn.lock
+package-lock.json
