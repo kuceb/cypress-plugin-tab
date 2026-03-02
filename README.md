@@ -69,7 +69,12 @@ cy.focused().tab() // tab into the currently focused element
 shift+tab:
 
 ```js
-cy.get('input').type('hwllo').tab().type('world').tab({ shift: true }).type('hello') // correct your mistake
+cy.get('input')
+  .type('hwllo')
+  .tab()
+  .type('world')
+  .tab({ shift: true })
+  .type('hello') // correct your mistake
 ```
 
 ### License

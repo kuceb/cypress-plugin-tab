@@ -19,7 +19,8 @@ Cypress.Commands.add(
       const doc = subject[0].ownerDocument
       const useActiveElement = shouldFollowFocusFromChain()
       const el = useActiveElement ? doc.activeElement : subject[0]
-      const useSubjectAsSearchAnchor = useActiveElement && isVirtualTabAnchor(subject[0])
+      const useSubjectAsSearchAnchor =
+        useActiveElement && isVirtualTabAnchor(subject[0])
       const searchStart = useSubjectAsSearchAnchor ? subject[0] : el
       const searchOptions = {
         allowFragmentTarget: searchStart !== el,
@@ -64,11 +65,8 @@ const performTab = (el, options, searchAnchor = el, searchOptions = {}) => {
     doc.defaultView.requestAnimationFrame(resolve)
   })
     .then(() => {
-      return keydown(
-        activeElement,
-        options,
-        simulatedDefault,
-        () => ensureFocused(activeElement),
+      return keydown(activeElement, options, simulatedDefault, () =>
+        ensureFocused(activeElement),
       )
     })
     .finally(() => {
@@ -103,7 +101,10 @@ const shouldFollowFocusFromChain = () => {
   let command = current.get('prev')
 
   while (command && typeof command.get === 'function') {
-    if (command.get('chainerId') !== chainerId || command.get('type') === 'parent') {
+    if (
+      command.get('chainerId') !== chainerId ||
+      command.get('type') === 'parent'
+    ) {
       break
     }
 
@@ -125,7 +126,9 @@ const isVirtualTabAnchor = (el) => {
   const href = el.getAttribute('href')
   const doc = el.ownerDocument
 
-  return Boolean(href && href.startsWith('#') && href !== '#' && doc.location.hash === href)
+  return Boolean(
+    href && href.startsWith('#') && href !== '#' && doc.location.hash === href,
+  )
 }
 
 const tabKeyEventPartial = {
@@ -159,7 +162,8 @@ const fireKeyEvent = (
 
   const keyboardEvent = new win.KeyboardEvent(type, eventInit)
 
-  const cancelled = !el.dispatchEvent(keyboardEvent) || keyboardEvent.defaultPrevented
+  const cancelled =
+    !el.dispatchEvent(keyboardEvent) || keyboardEvent.defaultPrevented
 
   return cancelled
 }
@@ -189,4 +193,3 @@ const keyup = (el, options) => {
 const pluginError = (mes) => {
   throw new Error(`[cypress-plugin-tab]: ${mes}`)
 }
-

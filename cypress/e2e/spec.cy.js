@@ -2,7 +2,6 @@
 // @ts-check
 
 describe('form behavior', () => {
-
   beforeEach(() => {
     cy.visit('/cypress/fixtures/forms.html')
   })
@@ -41,14 +40,10 @@ describe('form behavior', () => {
       $input.on('keydown', (e) => e.preventDefault())
     })
 
-    cy.get('input#search-input')
-      .tab()
-      .should('have.id', 'search-input')
+    cy.get('input#search-input').tab().should('have.id', 'search-input')
 
     cy.get('#search-input').should('have.focus')
   })
-
-
 
   it('throws on non-tabbable subject', (done) => {
     cy.on('fail', (err) => {
@@ -130,10 +125,7 @@ describe('form behavior', () => {
       $input.on('keydown', (e) => e.preventDefault())
     })
 
-    cy.get('input#search-input')
-      .focus()
-      .tab()
-      .should('have.id', 'search-input')
+    cy.get('input#search-input').focus().tab().should('have.id', 'search-input')
 
     cy.get('input#search-input').should('have.focus')
   })
@@ -192,7 +184,6 @@ describe('form behavior', () => {
       cy.get('body').tab().tab()
     })
   })
-
 })
 
 describe('fragment navigation', () => {
@@ -201,31 +192,25 @@ describe('fragment navigation', () => {
   })
 
   it('tabs from the fragment target after clicking a skip link', () => {
-    cy.get("#first-input").should("not.be.focused");
-    cy.get("#skip-to").click().tab()
+    cy.get('#first-input').should('not.be.focused')
+    cy.get('#skip-to').click().tab()
 
-
-    cy.get("#first-input").should("be.focused");
-    cy.get("#skip-to").click()
-    cy.get("#first-input").should("not.be.focused");
+    cy.get('#first-input').should('be.focused')
+    cy.get('#skip-to').click()
+    cy.get('#first-input').should('not.be.focused')
     cy.get('#skipped-button').focus().tab()
-    cy.get("#first-input").should("be.focused");
-
+    cy.get('#first-input').should('be.focused')
 
     cy.get('#skip-to').focus().tab()
-    cy.get("#skipped-button").should("be.focused");
-
-
+    cy.get('#skipped-button').should('be.focused')
   })
 
   it('tabs from the fragment target after clicking a skip link alias', () => {
-    cy.get("#first-input").should("not.be.focused");
-    cy.get("#skip-to").click().as('hi').tab()
-    cy.get("#first-input").should("be.focused");
+    cy.get('#first-input').should('not.be.focused')
+    cy.get('#skip-to').click().as('hi').tab()
+    cy.get('#first-input').should('be.focused')
   })
-
 })
-
 
 describe('tabindex -1 behavior', () => {
   beforeEach(() => {
@@ -264,12 +249,10 @@ describe('tabindex -1 behavior', () => {
 })
 
 describe('subject changes', () => {
-
   it('follows the current activeElement when tab is chained off an action', () => {
     cy.visit('/cypress/fixtures/auto-advance.html')
 
-    cy.get('#digit-1')
-      .type('1234').tab()
+    cy.get('#digit-1').type('1234').tab()
 
     cy.get('#submit').should('have.focus')
   })

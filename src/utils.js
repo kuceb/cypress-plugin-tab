@@ -14,7 +14,9 @@ const TABBABLE_SELECTOR = [
 ].join(', ')
 
 const getTabSequence = (doc) => {
-  const candidates = Array.from(doc.querySelectorAll(TABBABLE_SELECTOR)).filter(isTabbable)
+  const candidates = Array.from(doc.querySelectorAll(TABBABLE_SELECTOR)).filter(
+    isTabbable,
+  )
   const positiveTabIndex = candidates
     .filter((el) => getTabIndex(el) > 0)
     .sort(compareByTabOrder)
